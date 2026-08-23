@@ -1,0 +1,271 @@
+/* ============================================================
+   GALLERY PAGE
+   ============================================================ */
+
+/* ---- Album Coverflow ---- */
+.gallery-section {
+  padding: 48px 40px 96px;
+  background: var(--cream);
+  overflow: hidden;
+}
+
+:root {
+  --cf-size: 340px;
+}
+
+.coverflow-wrap {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 560px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1400px;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.coverflow-wrap.dragging { cursor: grabbing; }
+.coverflow-wrap.dragging .coverflow-item { transition: none; }
+
+.coverflow-stage {
+  position: relative;
+  width: 100%;
+  height: var(--cf-size);
+  transform-style: preserve-3d;
+}
+
+.coverflow-item {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--cf-size);
+  height: var(--cf-size);
+  margin-left: calc(var(--cf-size) / -2);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--surface);
+  box-shadow: 0 30px 50px rgba(28,10,8,0.35);
+  transition: transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+              opacity 0.3s ease,
+              box-shadow 0.3s ease;
+  will-change: transform, opacity;
+}
+
+.coverflow-item.is-active {
+  box-shadow: 0 40px 70px rgba(28,10,8,0.45);
+}
+
+.coverflow-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* Mirrored reflection beneath each cover */
+.coverflow-item::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: var(--cf-img);
+  background-size: cover;
+  background-position: center;
+  transform: scaleY(-1);
+  opacity: 0.22;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.35), transparent 65%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.35), transparent 65%);
+  pointer-events: none;
+}
+
+.coverflow-item-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(15,5,5,0.75) 0%, transparent 55%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+}
+
+.coverflow-item.is-active:hover .coverflow-item-overlay { opacity: 1; }
+
+.coverflow-item-category {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  margin-bottom: 4px;
+}
+
+.coverflow-item-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+}
+
+.coverflow-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 200;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: rgba(252,249,248,0.9);
+  color: var(--crimson);
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coverflow-arrow:hover {
+  background: var(--crimson);
+  color: white;
+  border-color: var(--crimson);
+}
+
+.coverflow-arrow-left { left: 8px; }
+.coverflow-arrow-right { right: 8px; }
+
+.coverflow-caption {
+  max-width: 600px;
+  margin: 16px auto 0;
+  text-align: center;
+}
+
+.coverflow-caption .cat {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--crimson);
+  margin-bottom: 6px;
+}
+
+.coverflow-caption .title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.coverflow-caption .count {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+/* Lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.lightbox.open { opacity: 1; pointer-events: all; }
+
+.lightbox-img {
+  max-width: 90vw;
+  max-height: 85vh;
+  border-radius: var(--radius-md);
+  box-shadow: 0 32px 64px rgba(0,0,0,0.5);
+  object-fit: contain;
+  transform: scale(0.94);
+  transition: transform 0.3s;
+}
+
+.lightbox.open .lightbox-img { transform: scale(1); }
+
+.lightbox-close {
+  position: absolute;
+  top: 24px; right: 32px;
+  font-size: 28px;
+  color: white;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  background: none;
+  border: none;
+  line-height: 1;
+}
+
+.lightbox-close:hover { opacity: 1; }
+
+.lightbox-caption {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  text-align: center;
+}
+
+.lightbox-caption .cat {
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+
+.lightbox-caption .title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* Load more */
+.gallery-load-more {
+  max-width: 1200px;
+  margin: 40px auto 0;
+  text-align: center;
+}
+
+/* Skeleton loading state */
+.coverflow-skel {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-md);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  :root { --cf-size: 260px; }
+  .coverflow-wrap { height: 420px; }
+  .coverflow-arrow { width: 40px; height: 40px; }
+  .gallery-section { padding: 32px 20px 64px; }
+}
+
+@media (max-width: 600px) {
+  :root { --cf-size: 200px; }
+  .coverflow-wrap { height: 340px; }
+  .coverflow-arrow-left { left: -4px; }
+  .coverflow-arrow-right { right: -4px; }
+}
